@@ -3,6 +3,7 @@ import { logger } from './helper/logger.js'
 import connectDB from './db/dbConnect.js'
 import dotenv from 'dotenv'
 import testRouter from './router/test.router.js'
+import adminRouter from './router/admin.router.js'
 import morgan from 'morgan'
 
 dotenv.config()
@@ -13,6 +14,8 @@ const app = express()
 app.use(morgan('dev'))
 app.use(express.json())
 app.use(`${process.env.API_VERSION}`, testRouter)
+app.use(`${process.env.API_VERSION}/admin`, adminRouter)
+
 
 
 app.listen(process.env.PORT, () => {
