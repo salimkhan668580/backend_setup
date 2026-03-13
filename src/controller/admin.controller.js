@@ -33,15 +33,21 @@ export default {
       });
     } catch (error) {
       logger.error(`Error while login: ${error.message}`);
+      if(error instanceof Error){
+        return res.status(400).json({
+            success: false,
+            message: error.message,
+        })
+      }
       res.status(500).json({
         success: false,
-        message: "Failed to login admin",
-        error: error.message,
+        message: "Failed to login admin"
+       
       });
     }
   },
 
-  forgetPassword: async (req, res) => {
+  sendPasswordOTP: async (req, res) => {
 
     try {
         if(!req.body.email){
@@ -94,11 +100,11 @@ export default {
     }
   },
 
-  changePassword: async (req, res) => {
+  forgotPassword: async (req, res) => {
 
     try {
        
-       await adminService.changePassword(req.body)
+       await adminService.forgotPassword(req.body)
 
       res.status(200).json({
         success: true,
@@ -118,8 +124,6 @@ export default {
       });
     }
   },
-
-
 
   // ===========subadmin==========
   createRole: async (req, res) => {

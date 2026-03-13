@@ -32,7 +32,7 @@ export default {
     };
   },
 
-  forgetPassword: async (data) => {
+  sendPasswordOTP: async (data) => {
     const user=await Admin.findOne({email:data.email});
     if(!user){
       throw new Error("If the email is registered, please check your inbox for the OTP.");
@@ -41,9 +41,10 @@ export default {
     const otpData = {
       email: data.email,
       otp: otp,
+      purpose: "forgot_password",
     };
 
-    const  userEmail= await Otp.findOne({ email: data.email });
+    const  userEmail= await Otp.findOne({ email: data.email, purpose: "forgot_password" });
     if(userEmail){
 
         userEmail.otp=otp;
@@ -74,8 +75,8 @@ export default {
     return true;
   },
 
-  changePassword: async (data) => {
-    const otpData=await Otp.findOne({email:data.email});
+  forgotPassword: async (data) => {
+    const otpData=await Otp.findOne({email:data.email, purpose: "forgot_password"});
     if(!otpData){
       throw new Error("invalid otp or resend otp !");
     }

@@ -16,7 +16,7 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-export const sendOtpEmail = async (email, otp) => {
+export const sendOtpEmail = async (email, otp, purpose) => {
 
   const info = await transporter.sendMail({
     from: '"OTP Service" <maddison53@ethereal.email>',

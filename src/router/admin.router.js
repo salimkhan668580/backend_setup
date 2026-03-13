@@ -6,9 +6,9 @@ const router = express.Router();
 
 router.post("/register", validateSchema(adminZodSchema.adminCreate), adminController.createsubAdmin);
 router.post("/login", validateSchema(adminZodSchema.adminLogin), adminController.loginAdmin);
-router.post("/forget",  adminController.forgetPassword);
+router.post("/send-forgot-otp",  adminController.sendPasswordOTP);
 router.post("/verify-otp",validateSchema(adminZodSchema.verifyOtp),adminController.verifyOtp);
-router.post("/change-password",validateSchema(adminZodSchema.changePassword),adminController.changePassword);
+router.post("/forgot-password",validateSchema(adminZodSchema.changePassword),adminController.forgotPassword);
 router.post("/role", adminController.createRole);
 
 export default router;

@@ -11,6 +11,10 @@ const OtpSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+   purpose: {
+    type: String,
+    enum: ["register", "forgot_password"]
+  },
 
   isVerify: {
     type: Boolean,
@@ -24,6 +28,8 @@ const OtpSchema = new mongoose.Schema({
   }
 
 }, { timestamps: true });
+
+OtpSchema.index({ email: 1, purpose: 1 });
 
 const Otp = mongoose.model("Otp", OtpSchema);
 
