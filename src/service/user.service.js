@@ -3,7 +3,7 @@ import Otp from "../Models/Otp.model.js";
 import { sendOtpEmail } from "../helper/sendEmail.js";
 import bcrypt from "bcryptjs";
 import { generateToken } from "../helper/token.js";
-
+import amadeusAxios from "../helper/axiosInstance.js";
 
 export default {
   testUser: async () => {
@@ -84,8 +84,8 @@ export default {
     };
     const token = generateToken(payload);
 
-const userObj = user.toObject();
-delete userObj.password;
+    const userObj = user.toObject();
+    delete userObj.password;
     return {
       data: userObj,
       token,
@@ -95,7 +95,9 @@ delete userObj.password;
   sendPasswordOTP: async (data) => {
     const user = await User.findOne({ email: data.email });
     if (!user) {
-      throw new Error("If the email is registered, please check your inbox for the OTP.");
+      throw new Error(
+        "If the email is registered, please check your inbox for the OTP.",
+      );
     }
     const otp = Math.floor(10000 + Math.random() * 90000);
     const otpData = {
@@ -140,21 +142,60 @@ delete userObj.password;
     return true;
   },
 
-   forgotPassword: async (data) => {
-      const otpData=await Otp.findOne({email:data.email, purpose: "forgot_password"});
-      if(!otpData){
-        throw new Error("invalid otp or resend otp !");
-      }
-       
-      if(!otpData.isVerify){
-           throw new Error("please verify Otp");
-      }
-      const user=await User.findOne({email:data.email});
-      if(!user){
-        throw new Error("user not found");
-      }
-      
-      user.password=data.newPassword;
-      await user.save();
-    },
+  forgotPassword: async (data) => {
+    const otpData = await Otp.findOne({
+      email: data.email,
+      purpose: "forgot_password",
+    });
+    if (!otpData) {
+      throw new Error("invalid otp or resend otp !");
+    }
+
+    if (!otpData.isVerify) {
+      throw new Error("please verify Otp");
+    }
+    const user = await User.findOne({ email: data.email });
+    if (!user) {
+      throw new Error("user not found");
+    }
+
+    user.password = data.newPassword;
+    await user.save();
+  },
+
+  // ========================flights ================
+searchFlights: async (params, page, limit) => {
+
+  const response = await amadeusAxios.get("/v2/shopping/flight-offers", {
+    params,
+  });
+
+  let flights = response.data.data;
+
+  // filter price
+  flights = flights.filter(f => Number(f.price.total) <= 20000);
+
+  // filter airline
+  flights = flights.filter(
+    f => f.itineraries[0].segments[0].carrierCode === "AI"
+  );
+
+ 
+  flights.sort(
+    (a, b) => Number(a.price.total) - Number(b.price.total)
+  );
+
+
+  const start = (page - 1) * limit;
+  const end = start + limit;
+
+  const paginatedFlights = flights.slice(start, end);
+
+  return {
+    totalFlights: flights.length,
+    page,
+    limit,
+    data: paginatedFlights
+  };
+},
 };

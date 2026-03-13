@@ -3,6 +3,7 @@ import adminService from "../service/admin.service.js";
 
 export default {
 
+  
     // ============auth============
   createsubAdmin: async (req, res) => {
     try {
@@ -124,6 +125,8 @@ export default {
       });
     }
   },
+
+
 
   // ===========subadmin==========
   createRole: async (req, res) => {

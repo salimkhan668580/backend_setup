@@ -191,4 +191,68 @@ export default {
       });
     }
   },
+
+  //   ========================flights routes==================
+searchFlights: async (req, res) => {
+  try {
+
+    const { from, to, date, adults, page = 1, limit = 10 } = req.query;
+
+    const limitValue = Number(limit) || 10;
+    const pageValue = Number(page) || 1;
+
+    const params = {
+      originLocationCode: from,
+      destinationLocationCode: to,
+      departureDate: date,
+      adults: Number(adults) || 1,
+      max: 250
+    };
+
+    const data = await userService.searchFlights(
+      params,
+      pageValue,
+      limitValue
+    );
+
+    res.status(200).json({
+      success: true,
+      message: "flight fetched successfully",
+      ...data
+    });
+
+  } catch (error) {
+
+    logger.error(`Error while searching flights: ${error.message}`);
+
+    res.status(500).json({
+      success: false,
+      message: "Failed to search flights",
+      error: error.message,
+    });
+
+  }
+},
+  forgotPassword: async (req, res) => {
+    try {
+      await userService.forgotPassword(req.body);
+
+      res.status(200).json({
+        success: true,
+        message: "Password changed successfully",
+      });
+    } catch (error) {
+      logger.error(`Error while change password: ${error.message}`);
+      if (error instanceof Error) {
+        return res.status(400).json({
+          success: false,
+          message: error.message,
+        });
+      }
+      res.status(500).json({
+        success: false,
+        message: "Failed to change password",
+      });
+    }
+  },
 };
